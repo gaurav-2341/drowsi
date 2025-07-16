@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Drowsiness Detection</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #eaf4fb;
+      margin: 0;
+      padding: 20px;
+      text-align: center;
+      color: #2c3e50;
+    }
+
+    h1 {
+      margin-top: 20px;
+      font-size: 28px;
+      color: #216db3;
+    }
+
+    #webcam-container {
+      width: 200px;
+      height: 200px;
+      margin: 20px auto;
+      border: 4px solid #3498db;
+      background-color: black;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .bar-container {
+      width: 80%;
+      margin: 20px auto;
+    }
+
+    .label {
+      font-size: 18px;
+      margin-bottom: 5px;
+    }
+
+    .bar {
+      height: 20px;
+      background-color: #ddd;
+      border-radius: 10px;
+      overflow: hidden;
+      margin-bottom: 15px;
+    }
+
+    .fill-awake {
+      height: 100%;
+      background-color: #2ecc71;
+      width: 0%;
+      transition: width 0.3s ease;
+    }
+
+    .fill-drowsy {
+      height: 100%;
+      background-color: #e74c3c;
+      width: 0%;
+      transition: width 0.3s ease;
+    }
+
+    #alert-box {
+      color: red;
+      font-size: 20px;
+      font-weight: bold;
+      display: none;
+      margin-top: 20px;
+    }
+
+    button {
+      padding: 10px 20px;
+      background-color: #3498db;
+      color: white;
+      border: none;
+      font-size: 16px;
+      border-radius: 6px;
+      cursor: pointer;
+      margin-top: 20px;
+    }
+
+    button:hover {
+      background-color: #2980b9;
+    }
+
+  </style>
+</head>
+<body>
+
+  <h1>🧠 Drowsiness Detection Monitor</h1>
+
+  <button onclick="init()">Start Camera</button>
+
+  <div id="webcam-container"></div>
+
+  <div class="bar-container">
+    <div class="label">Awake Level</div>
+    <div class="bar"><div class="fill-awake" id="awake-bar"></div></div>
+
+    <div class="label">Drowsy Level</div>
+    <div class="bar"><div class="fill-drowsy" id="drowsy-bar"></div></div>
+  </div>
+
+  <div id="alert-box">🚨 Drowsy! Please wake up!</div>
+
+  <!-- TensorFlow + TeachableMachine -->
+  <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@latest"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@teachablemachine/image@latest"></script>
+
+  <script>
+    const URL = "https://teachablemachine.withgoogle.com/models/46VSzKASk/";
+
+    let model, webcam, maxPredictions;
+    let drowsyStartTime = null;
+    let alarmTriggered = false;
+
+    async function init() {
+      const modelURL = URL + "model.json";
+      const metadataURL = URL + "metadata.json";
+
+      model = await tmImage.load(modelURL, metadataURL);
+      maxPredictions = model.getTotalClasses();
+
+      webcam = new tmImage.Webcam(200, 200, true);
+
+      try {
+        await webcam.setup(); // This will prompt for permission
+        await webcam.play();
+        document.getElementById("webcam-container").innerHTML = '';
+        document.getElementById("webcam-container").appendChild(webcam.canvas);
+        window.requestAnimationFrame(loop);
+      } catch (err) {
+        alert("Please allow access to the webcam.");
+        console.error("Webcam setup error:", err);
+      }
+    }
+
+    function speak(text) {
+      const utterance = new SpeechSynthesisUtterance(text);
+      window.speechSynthesis.speak(utterance);
+    }
+
+    async function loop() {
+      webcam.update();
+      await predict();
+      window.requestAnimationFrame(loop);
+    }
+
+    async function predict() {
+      const prediction = await model.predict(webcam.canvas);
+
+      const drowsy = prediction.find(p => p.className.toLowerCase() === "drowsy");
+      const awake = prediction.find(p => p.className.toLowerCase() === "awake");
+
+      const drowsyProb = drowsy ? drowsy.probability : 0;
+      const awakeProb = awake ? awake.probability : 0;
+
+      // Update bars
+      document.getElementById("awake-bar").style.width = (awakeProb * 100).toFixed(0) + "%";
+      document.getElementById("drowsy-bar").style.width = (drowsyProb * 100).toFixed(0) + "%";
+
+      // Alert logic
+      const alertBox = document.getElementById("alert-box");
+
+      if (drowsyProb > 0.7) {
+        if (!drowsyStartTime) {
+          drowsyStartTime = Date.now();
+        } else {
+          const duration = Date.now() - drowsyStartTime;
+          if (duration >= 3000 && !alarmTriggered) {
+            speak("Please wake up!");
+            alertBox.style.display = "block";
+            alarmTriggered = true;
+          }
+        }
+      } else {
+        drowsyStartTime = null;
+        alarmTriggered = false;
+        alertBox.style.display = "none";
+      }
+    }
+  </script>
+
+</body>
+</html>
