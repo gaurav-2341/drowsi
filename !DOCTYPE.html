@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Drowsiness Detection AI</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #f5f9fc;
+      color: #333;
+      margin: 0;
+      padding: 0;
+      line-height: 1.6;
+    }
+
+    header {
+      background-color: #3498db;
+      color: white;
+      padding: 40px 20px;
+      text-align: center;
+    }
+
+    header h1 {
+      font-size: 36px;
+      margin-bottom: 10px;
+    }
+
+    main {
+      max-width: 800px;
+      margin: 40px auto;
+      padding: 0 20px;
+    }
+
+    section {
+      margin-bottom: 40px;
+    }
+
+    h2 {
+      font-size: 24px;
+      color: #2c3e50;
+    }
+
+    p {
+      font-size: 18px;
+      margin-top: 10px;
+    }
+
+    .button-container {
+      text-align: center;
+      margin-top: 50px;
+    }
+
+    .start-btn {
+      background-color: #3498db;
+      color: white;
+      padding: 14px 28px;
+      font-size: 18px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+
+    .start-btn:hover {
+      background-color: #2980b9;
+    }
+
+    footer {
+      text-align: center;
+      padding: 30px 0;
+      background-color: #ecf0f1;
+      margin-top: 60px;
+      font-size: 14px;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1>Driver Drowsiness Detection AI</h1>
+    <p>Powered by Teachable Machine & TensorFlow.js</p>
+  </header>
+
+  <main>
+    <section>
+      <h2>What is this?</h2>
+      <p>This is a real-time AI-powered system that detects whether a driver is awake or drowsy using webcam input. It uses machine learning models trained with Teachable Machine to classify driver alertness.</p>
+    </section>
+
+    <section>
+      <h2>Why is it important?</h2>
+      <p>Driver fatigue is one of the major causes of road accidents. This tool can help prevent such accidents by alerting drivers with a voice warning when signs of drowsiness are detected.</p>
+    </section>
+
+    <section>
+      <h2>How does it work?</h2>
+      <p>The model continuously monitors the driver's face using a webcam. If the system detects that the user is drowsy for more than 3 seconds, it plays an audio alert to wake them up. All processing happens locally in the browser — no data is stored or uploaded.</p>
+    </section>
+
+    <div class="button-container">
+      <a href="monitor.html">
+        <button class="start-btn">Start Monitoring</button>
+      </a>
+    </div>
+  </main>
+
+  <footer>
+    &copy; 2025 DrowsinessAI. Built with TensorFlow.js and Teachable Machine.
+  </footer>
+
+</body>
+</html>
+
+
+
